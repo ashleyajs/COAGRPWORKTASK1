@@ -1,5 +1,5 @@
 ;Computer Organization & Assembly 
-; Task 4 - Group Members: Ashley Scott, Aaliyah, ....
+; Task 4 - Group Members: Ashley Scott, Aaliyah, Shaqur Adair ....
 .model small
 .stack 100h
 .data
