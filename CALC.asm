@@ -15,7 +15,9 @@
     choice db ?
     num1 db ?
     num2 db ?
-    buffer db 3 dup(0)
+    buffer db 5 ; Max characters buffer can hold
+           db ? ; DOS will fill this with the actual number of characters read
+           db 5 dup(0) ; Characters read from console
 
 .code
 start:
@@ -28,7 +30,7 @@ main_menu:
 
 processChoice:
     cmp choice, '3'
-    je endProgram
+    ; je endProgram
     cmp choice, '1'
     je addNumbers
     cmp choice, '2'
@@ -42,27 +44,23 @@ displayError:
 
 addNumbers:
     call getNumbers
-    mov al, buffer
+    mov al, [buffer+2] ; Adjusted to correctly reference the input
     sub al, '0'
-    mov num1, al
-    mov al, buffer+2
-    sub al, '0'
-    mov num2, al
-    add num1, num2
+    mov bl, [buffer+4] ; Adjusted for second number
+    sub bl, '0'
+    add al, bl
+    mov num1, al ; Store result in num1 for display
     call displayResult
     jmp main_menu
 
 multiplyNumbers:
     call getNumbers
-    mov al, buffer
+    mov al, [buffer+2] ; Correct reference to buffer
     sub al, '0'
-    mov bl, buffer+2
+    mov bl, [buffer+4]
     sub bl, '0'
-    mov num1, al
-    mov num2, bl
-    mov ah, 0
-    mul bl
-    mov num1, al
+    mul bl ; AL * BL, result in AX
+    mov num1, al ; Store low byte of result for display
     call displayResult
     jmp main_menu
 
@@ -79,8 +77,8 @@ getNumbers:
     mov ah, 09h
     lea dx, numPrompt
     int 21h
-    mov ah, 0Ah
     lea dx, buffer
+    mov ah, 0Ah
     int 21h
     ret
 
@@ -98,10 +96,10 @@ displayResult:
     add dl, '0'
     mov ah, 02h
     int 21h
-    mov dl, 13
+    mov dl, 13 ; Carriage return
     mov ah, 02h
     int 21h
-    mov dl, 10
+    mov dl, 10 ; Line feed
     mov ah, 02h
     int 21h
     ret
@@ -111,4 +109,3 @@ endProgram:
     int 21h
     ret
 end start
-
