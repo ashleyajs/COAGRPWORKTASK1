@@ -3,6 +3,7 @@
 .model small
 .stack 100h
 .data
+    ; Messages
     menuMsg db "Simple Calculator",13,10
             db "1) Add",13,10
             db "2) Multiply",13,10
@@ -12,6 +13,7 @@
     resultMsg db "The result is: $"
     errMsg db "Invalid input, please try again.",13,10,0
 
+    ; Variables
     choice db ?
     num1 db ?
     num2 db ?
@@ -23,22 +25,24 @@ start:
     mov ds, ax
 
 main_menu:
+    ; Display main menu
     call displayMenu
+    ; Get user choice
     call getChoice
 
 processChoice:
-    cmp choice, '3'
-    je endProgram
-    cmp choice, '1'
-    je addNumbers
-    cmp choice, '2'
-    je multiplyNumbers
+    cmp choice, '3'     ; Compare choice with '3' (exit)
+    je endProgram       ; If equal, exit program
+    cmp choice, '1'     ; Compare choice with '1' (add)
+    je addNumbers       ; If equal, jump to addNumbers
+    cmp choice, '2'     ; Compare choice with '2' (multiply)
+    je multiplyNumbers  ; If equal, jump to multiplyNumbers
 
 displayError:
     mov ah, 09h
     lea dx, errMsg
     int 21h
-    jmp main_menu
+    jmp main_menu       ; Jump back to main_menu
 
 addNumbers:
     call getNumbers
@@ -48,9 +52,9 @@ addNumbers:
     mov al, buffer+2
     sub al, '0'
     mov num2, al
-    add num1, num2
+    add num1, num2     ; Add num1 and num2
     call displayResult
-    jmp main_menu
+    jmp main_menu      
 
 multiplyNumbers:
     call getNumbers
@@ -61,10 +65,10 @@ multiplyNumbers:
     mov num1, al
     mov num2, bl
     mov ah, 0
-    mul bl
+    mul bl              ; Multiply num1 and num2
     mov num1, al
     call displayResult
-    jmp main_menu
+    jmp main_menu      
 
 getChoice:
     mov ah, 09h
@@ -111,4 +115,3 @@ endProgram:
     int 21h
     ret
 end start
-
